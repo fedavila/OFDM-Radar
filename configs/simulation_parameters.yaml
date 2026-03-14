@@ -1,0 +1,29 @@
+radar:
+  fc: 24e9            # Carrier frequency
+  snr_db: 20.0        # Signal-to-noise ratio in dB
+  H: 3                # Number of targets
+  
+ofdm:
+  modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
+  N_fft: 512          # FFT size
+  delta_f: 13e3       # Subcarrier spacing
+  N: 512              # Number of active subcarriers
+  M: 256              # Number of OFDM symbols
+  CP: 16              # Cyclic prefix length  
+  
+periodogram:
+  N_per: 1024         # Number of periodogram range bins
+  M_per: 512          # Number of periodogram doppler bins
+
+targets:
+  - distance: 20.0    # meters
+    velocity: 0.0     # m/s
+    rcs: 10.0         # radar cross section in dBsm
+
+  - distance: 25.0    
+    velocity: -20.0   
+    rcs: 15.0          
+
+  - distance: 30.0
+    velocity: 0.0
+    rcs: 20.0
