@@ -2,8 +2,8 @@ import numpy as np
 
 def ofdm_demodulation(rx_signal, CP_LEN, N_fft, F_tx):
     M, N = F_tx.shape
-    rx_frame_cp = rx_signal.reshape(M, N + CP_LEN)
-    rx_frame = rx_frame_cp[:, CP_LEN:]
+    rx_frame_cp = rx_signal.reshape(M, N + CP_LEN) 
+    rx_frame = rx_frame_cp[:, CP_LEN:] 
 
     F_rx = np.fft.fft(rx_frame, n=N_fft, axis=1)
     F = F_rx / F_tx

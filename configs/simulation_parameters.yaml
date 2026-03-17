@@ -5,15 +5,15 @@ radar:
   
 ofdm:
   modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
+  delta_f: 90.3e3     # Subcarrier spacing
   N_fft: 512          # FFT size
-  delta_f: 13e3       # Subcarrier spacing
   N: 512              # Number of active subcarriers
   M: 256              # Number of OFDM symbols
-  CP: 16              # Cyclic prefix length  
-  
+  CP: 64              # Cyclic prefix length  
+
 periodogram:
   N_per: 1024         # Number of periodogram range bins
-  M_per: 512          # Number of periodogram doppler bins
+  M_per: 1024         # Number of periodogram doppler bins
 
 targets:
   - distance: 20.0    # meters

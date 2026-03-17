@@ -8,3 +8,8 @@ def load_config(path="configs/simulation_parameters.yaml"):
         config = yaml.safe_load(file)
     return config
 
+"""
+Implement polt functions:
+    - color map for peridogram
+    - target detection
+"""
