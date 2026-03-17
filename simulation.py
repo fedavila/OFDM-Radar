@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import load_config, C0, KB
+from src.utils import load_config, plot_periodogram, C0, KB
 from src import environment as env
 from src import transmitter as tx
 from src import receiver as rx
@@ -16,6 +16,9 @@ DELTA_F = config['ofdm']["delta_f"]
 CP_LEN = config['ofdm']['CP']
 N = config['ofdm']["N"]
 M = config['ofdm']['M']
+
+N_PER = config["periodogram"]['N_per']
+M_PER = config["periodogram"]['M_per']
 
 FS = N_FFT * DELTA_F
 
@@ -37,18 +40,21 @@ tx_signal = tx.ofdm_modulation(F_tx, CP_LEN, N_FFT)
 # Environment
 targets = [env.Target(**t) for t in config['targets']]
 
+echos = np.zeros_like(tx_signal, dtype=complex)
 
-"""
-Implement superposition of all target effects on the tx_signal
-Implement random phase rotation on the final echo signal
-Add WGN respecting the SNR to be simulated
-"""
+for target in targets:
+    echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
+
+rx_signal = env.apply_awgn(echos, SNR_DB)
 
 # Receiver
+F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
+
+per, n_ax, m_ax = rx.periodogram(F, N_PER, M_PER)
+
+plot_periodogram(per, n_ax, m_ax)
 
 """
-Perform OFDM demodulation
-Perform perdiodogram over F matrix
 Perform target detection (detection and interpolation algorithms)
 Target params estimation (estimation algorithms)
 Plot

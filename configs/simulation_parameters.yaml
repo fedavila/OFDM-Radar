@@ -1,11 +1,11 @@
 radar:
-  fc: 24e9            # Carrier frequency
+  fc: 24000000000.0            # Carrier frequency
   snr_db: 20.0        # Signal-to-noise ratio in dB
   H: 3                # Number of targets
   
 ofdm:
   modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
-  delta_f: 90.3e3     # Subcarrier spacing
+  delta_f: 90300.0     # Subcarrier spacing
   N_fft: 512          # FFT size
   N: 512              # Number of active subcarriers
   M: 256              # Number of OFDM symbols
