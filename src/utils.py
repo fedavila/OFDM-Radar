@@ -13,7 +13,7 @@ def load_config(path="configs/simulation_parameters.yaml"):
 
 
 def plot_periodogram(per, n_idx, m_idx, delta_f, T_sym, fc, v_lim, d_lim, title="Range-Doppler Map"):
-    """
+    """ 
     Plot periodogram as a colormap (range-Doppler map).
 
     Parameters
