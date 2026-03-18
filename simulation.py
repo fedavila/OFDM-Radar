@@ -21,6 +21,7 @@ N_PER = config["periodogram"]['N_per']
 M_PER = config["periodogram"]['M_per']
 
 FS = N_FFT * DELTA_F
+T_SYM = (1 / DELTA_F) + (CP_LEN / FS)
 
 if MODULATION == "BPSK": 
     BITS_PER_SYMBOL = 1
@@ -52,10 +53,13 @@ F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 
 per, n_ax, m_ax = rx.periodogram(F, N_PER, M_PER)
 
-plot_periodogram(per, n_ax, m_ax)
+v_lim = [-30, 30]
+d_lim = [0, 40.0]
+plot_periodogram(per, n_ax, m_ax, DELTA_F, T_SYM, FC, v_lim, d_lim)
 
 """
-Perform target detection (detection and interpolation algorithms)
-Target params estimation (estimation algorithms)
+Perform target detection (CFAR detection)
+Target params estimation
+Compute error
 Plot
 """

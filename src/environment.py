@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import C0
+from src.utils import C0, KB
 
 
 class Target:
@@ -42,6 +42,10 @@ def apply_target_echo(target, signal, cp_len, fs, fc):
     return b * delayed * doppler * rand_phase
 
 def apply_awgn(signal, snr_db):
+
+    """
+    Change function: generate noise power as in equation 3.35
+    """
     sig_power = np.mean(np.abs(signal)**2)
 
     snr_lin = 10 ** (snr_db / 10)

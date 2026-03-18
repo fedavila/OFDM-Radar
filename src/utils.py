@@ -12,7 +12,7 @@ def load_config(path="configs/simulation_parameters.yaml"):
     return config
 
 
-def plot_periodogram(per, n_idx, m_idx, title="Range-Doppler Map"):
+def plot_periodogram(per, n_idx, m_idx, delta_f, T_sym, fc, v_lim, d_lim, title="Range-Doppler Map"):
     """
     Plot periodogram as a colormap (range-Doppler map).
 
@@ -27,26 +27,40 @@ def plot_periodogram(per, n_idx, m_idx, title="Range-Doppler Map"):
     """
 
     # Convert to dB scale (avoid log(0))
-    per_db = 10 * np.log10(per + 1e-12)
+    
+    nper = len(n_idx)
+    mper = len(m_idx)
+
+    d = n_idx * C0 / (2 * nper * delta_f)
+    v = m_idx * C0 / (2 * fc * T_sym * mper)
+
+    d_mask = (d >= d_lim[0]) & (d <= d_lim[1])
+    v_mask = (v >= v_lim[0]) & (v <= v_lim[1])
+
+    per_crop = per[np.ix_(d_mask, v_mask)]
+    per_crop_db = 10 * np.log10(per_crop + 1e-12)
+
+    d_crop = d[d_mask]
+    v_crop = v[v_mask]
 
     plt.figure(figsize=(8, 5))
 
-    # extent maps indices to axes
-    extent = [
-        m_idx[0], m_idx[-1],   # Doppler axis (x)
-        n_idx[0], n_idx[-1]    # Range axis (y, flipped)
-    ]
+    vmax = per_crop_db.max()
+    vmin = per_crop_db.min()
 
     plt.imshow(
-        per_db,
+        per_crop_db,
         aspect='auto',
         cmap='viridis',
-        extent=extent
+        origin='lower',
+        vmin=vmin,
+        vmax=vmax,
+        extent=[v_crop[0], v_crop[-1], d_crop[0], d_crop[-1]]
     )
 
     plt.colorbar(label="Power (dB)")
-    plt.xlabel("Doppler bins")
-    plt.ylabel("Range bins")
+    plt.xlabel("Velocity (m/s)")
+    plt.ylabel("Range (m)")
     plt.title(title)
 
     plt.tight_layout()

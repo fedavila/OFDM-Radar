@@ -1,19 +1,21 @@
+# USE 5G NUMEROLOGY 1
+
 radar:
   fc: 24000000000.0            # Carrier frequency
-  snr_db: 20.0        # Signal-to-noise ratio in dB
+  NF: 8.0        # Signal-to-noise ratio in dB
   H: 3                # Number of targets
   
 ofdm:
   modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
-  delta_f: 90300.0     # Subcarrier spacing
-  N_fft: 512          # FFT size
-  N: 512              # Number of active subcarriers
+  delta_f: 30000.0     # Subcarrier spacing
+  N_fft: 4096          # FFT size
+  N: 3275              # Number of active subcarriers
   M: 256              # Number of OFDM symbols
   CP: 64              # Cyclic prefix length  
 
 periodogram:
-  N_per: 1024         # Number of periodogram range bins
-  M_per: 1024         # Number of periodogram doppler bins
+  N_per: 4096         # Number of periodogram range bins
+  M_per: 4096        # Number of periodogram doppler bins
 
 targets:
   - distance: 20.0    # meters
