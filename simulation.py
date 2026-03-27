@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import load_config, plot_periodogram
+from src.utils import load_config, plot_periodogram, C0
 from src import environment as env
 from src import transmitter as tx
 from src import receiver as rx
@@ -26,6 +26,12 @@ FS = N_FFT * DELTA_F              # Hz
 T_SYM = (1.0 / DELTA_F) + T_CP    # seconds
 CP_LEN = int(np.round(T_CP * FS)) # samples
 
+dmax = T_CP * C0 / 2
+vmax = DELTA_F * C0 / (10 * FC)
+
+N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
+M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
+
 if MODULATION == "BPSK": 
     BITS_PER_SYMBOL = 1
 else: 
@@ -49,15 +55,14 @@ echos = np.zeros_like(tx_signal, dtype=complex)
 for target in targets:
     echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-# rx_signal = env.apply_awgn_snr(echos, 30.0)
 rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, FS)
 
 # Receiver
 F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 
-per, n_idx, m_idx = rx.periodogram(F, N_PER, M_PER)
+per, n_idx, m_idx = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX)
 
-plot_periodogram(per, n_idx, m_idx, DELTA_F, T_SYM, FC, 
+plot_periodogram(per, n_idx, m_idx, DELTA_F, T_SYM, FC, N_PER, M_PER,
                  v_lim=[-30.0, 30.0], 
                  d_lim=[0.0, 40.0],
                  title="Range-Doppler Map")

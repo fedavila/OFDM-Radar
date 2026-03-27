@@ -11,7 +11,7 @@ ofdm:
   delta_f: 30000.0    # Subcarrier spacing (Hz)
   T_cp: 0.00000234    # Cyclic prefix duration (seconds)
   N_fft: 4096         # FFT size
-  N: 4096             # Number of active subcarriers
+  N: 3276             # Number of active subcarriers
   M: 256              # Number of OFDM symbols
 
 periodogram:

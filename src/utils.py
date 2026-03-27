@@ -12,7 +12,7 @@ def load_config(path="configs/simulation_parameters.yaml"):
     return config
 
 
-def plot_periodogram(per, n_idx, m_idx, delta_f, T_sym, fc, v_lim, d_lim, title="Range-Doppler Map"):
+def plot_periodogram(per, n_idx, m_idx, delta_f, T_sym, fc, nper, mper, v_lim, d_lim, title="Range-Doppler Map"):
     """ 
     Plot periodogram as a colormap (range-Doppler map).
 
@@ -28,8 +28,6 @@ def plot_periodogram(per, n_idx, m_idx, delta_f, T_sym, fc, v_lim, d_lim, title=
 
     # Convert to dB scale (avoid log(0))
     
-    nper = len(n_idx)
-    mper = len(m_idx)
 
     d = n_idx * C0 / (2 * nper * delta_f)
     v = m_idx * C0 / (2 * fc * T_sym * mper)

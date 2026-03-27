@@ -2,11 +2,12 @@ import numpy as np
 
 def ofdm_demodulation(rx_signal, CP_LEN, N_fft, F_tx):
     M, N = F_tx.shape
-    rx_frame_cp = rx_signal.reshape(M, N + CP_LEN) 
+    rx_frame_cp = rx_signal.reshape(M, N_fft + CP_LEN) 
     rx_frame = rx_frame_cp[:, CP_LEN:] 
 
     F_rx = np.fft.fft(rx_frame, n=N_fft, axis=1)
-    F = F_rx / F_tx
+
+    F = F_rx[:, :N] / F_tx
     return F
 
 def periodogram(F, N_per, M_per):
@@ -27,6 +28,22 @@ def periodogram(F, N_per, M_per):
     return per, n_idx, m_idx
 
 
+def crop_periodogram(F, N_per, M_per, N_max, M_max):
+    M, N = F.shape
+    F_nm = F.T
+
+    F_range = np.fft.ifft(F_nm, n=N_per, axis=0)
+    F_range = F_range[:N_max, :]
+
+    F_dopp = np.fft.fft(F_range, n=M_per, axis=1)
+    F_dopp = np.fft.fftshift(F_dopp, axes=1)
+    F_dopp = F_dopp[:, (M_per // 2) - M_max : (M_per // 2) + M_max + 1]
     
 
+    per = np.abs(F_dopp)**2 / (N * M)
+
+    n_idx = np.arange(N_max)
+    m_idx = np.arange(-M_max, M_max + 1)
+
+    return per, n_idx, m_idx
 
