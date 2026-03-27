@@ -1,8 +1,9 @@
 import numpy as np
-from src.utils import load_config, plot_periodogram, C0
+from src.utils import load_config, plot_periodogram, plot_binary_map_with_detections, C0
 from src import environment as env
 from src import transmitter as tx
 from src import receiver as rx
+from src import post_processing as post
 
 config = load_config()
 
@@ -10,6 +11,7 @@ FC = config['radar']['fc']
 TEMP = config['radar']['temperature']
 NF_DB = config['radar']['NF']
 H = config['radar']['H']
+FAR = config['radar']['FAR']
 
 MODULATION = config['ofdm']['modulation']
 N_FFT = config['ofdm']['N_fft']
@@ -47,6 +49,7 @@ F_tx = symbols.reshape(M, N)
 
 tx_signal = tx.ofdm_modulation(F_tx, CP_LEN, N_FFT)
 
+
 # Environment
 targets = [env.Target(**t) for t in config['targets']]
 
@@ -57,15 +60,32 @@ for target in targets:
 
 rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, FS)
 
+
 # Receiver
 F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 
-per, n_idx, m_idx = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX)
+per, n_idx, m_idx, noise_power_hat = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window="hamming")
 
-plot_periodogram(per, n_idx, m_idx, DELTA_F, T_SYM, FC, N_PER, M_PER,
-                 v_lim=[-30.0, 30.0], 
-                 d_lim=[0.0, 40.0],
+# Plotting
+d_ax = n_idx * C0 / (2 * N_PER * DELTA_F)
+v_ax = m_idx * C0 / (2 * FC * T_SYM * M_PER)
+vlim=[-100.0, 100.0] 
+dlim=[0.0, 40.0]
+
+
+plot_periodogram(per, d_ax, v_ax,
+                 v_lim=vlim, 
+                 d_lim=dlim,
                  title="Range-Doppler Map")
+
+detections, eta, B = post.cfar_detector(per, noise_power_hat, FAR, N_win=4, M_win=64)
+
+plot_binary_map_with_detections(B, detections, n_idx, m_idx, DELTA_F, T_SYM, FC, N_PER, M_PER,
+                                v_lim=vlim,
+                                d_lim=dlim,
+                                title="Binary Map with Detections")
+
+
 
 """
 Perform target detection (CFAR detection)

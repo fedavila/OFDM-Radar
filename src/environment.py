@@ -57,8 +57,6 @@ def apply_awgn_snr(signal, snr_db):
 
 def apply_awgn_nf(signal, temp, nf_db, bandwidth):
 
-    sig_power = np.mean(np.abs(signal)**2)
-
     nf_lin = 10 ** (nf_db / 10)
     noise_power = KB * temp * nf_lin * bandwidth
 
