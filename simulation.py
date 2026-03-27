@@ -7,7 +7,8 @@ from src import receiver as rx
 config = load_config()
 
 FC = config['radar']['fc']
-SNR_DB = config['radar']['snr_db']
+TEMP = config['radar']['temperature']
+NF_DB = config['radar']['NF']
 H = config['radar']['H']
 
 MODULATION = config['ofdm']['modulation']
@@ -20,7 +21,8 @@ M = config['ofdm']['M']
 N_PER = config["periodogram"]['N_per']
 M_PER = config["periodogram"]['M_per']
 
-FS = N_FFT * DELTA_F            # Hz
+BANDWIDTH = N * DELTA_F
+FS = N_FFT * DELTA_F              # Hz
 T_SYM = (1.0 / DELTA_F) + T_CP    # seconds
 CP_LEN = int(np.round(T_CP * FS)) # samples
 
@@ -47,7 +49,8 @@ echos = np.zeros_like(tx_signal, dtype=complex)
 for target in targets:
     echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-rx_signal = env.apply_awgn(echos, SNR_DB)
+# rx_signal = env.apply_awgn_snr(echos, 30.0)
+rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, FS)
 
 # Receiver
 F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)

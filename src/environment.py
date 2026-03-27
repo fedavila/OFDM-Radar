@@ -13,7 +13,7 @@ def target2params(target, fc):
 
     tau = 2.0 * target.distance / C0
     fd = 2.0 * target.velocity * fc / C0
-    b = np.sqrt((C0 * rcs) / ((4*np.pi)**3 * target.distance**4 * fc**2))
+    b = np.sqrt((C0**2 * rcs) / ((4*np.pi)**3 * target.distance**4 * fc**2))
 
     return tau, fd, b
 
@@ -41,7 +41,7 @@ def apply_target_echo(target, signal, cp_len, fs, fc):
 
     return b * delayed * doppler * rand_phase
 
-def apply_awgn(signal, snr_db):
+def apply_awgn_snr(signal, snr_db):
 
     """
     Change function: generate noise power as in equation 3.35
@@ -50,6 +50,17 @@ def apply_awgn(signal, snr_db):
 
     snr_lin = 10 ** (snr_db / 10)
     noise_power = sig_power / snr_lin
+
+    noise = np.sqrt(noise_power / 2) * (np.random.randn(len(signal)) + 1j*np.random.randn(len(signal)))
+
+    return signal + noise
+
+def apply_awgn_nf(signal, temp, nf_db, bandwidth):
+
+    sig_power = np.mean(np.abs(signal)**2)
+
+    nf_lin = 10 ** (nf_db / 10)
+    noise_power = KB * temp * nf_lin * bandwidth
 
     noise = np.sqrt(noise_power / 2) * (np.random.randn(len(signal)) + 1j*np.random.randn(len(signal)))
 
