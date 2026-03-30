@@ -1,7 +1,5 @@
 import numpy as np
 
-import numpy as np
-
 
 def cfar_detector(
     per: np.ndarray,
@@ -84,11 +82,10 @@ def cfar_detector(
             }
         )
 
-        n_start = max(0, n0 - r_n)
-        n_stop  = min(N_max, n0 + r_n + 1)
-        m_start = max(0, m0 - r_m)
-        m_stop  = min(M_crop, m0 + r_m + 1)
+        n = np.arange(N_max)[:, None]
+        m = np.arange(M_crop)[None, :]
 
-        B[n_start:n_stop, m_start:m_stop] = False
+        ellipse = ((n - n0)**2 / (r_n**2) + (m - m0)**2 / (r_m**2)) <= 1
+        B[ellipse] = False
 
     return detections, eta, B

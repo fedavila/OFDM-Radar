@@ -2,10 +2,12 @@
 
 radar:
   fc: 3500000000.0    # Carrier frequency (Hz)
+  Ptx: 30.0           # Transmit power (dBm)
+  G: 0.0             # Antenna gain (dBi)
   NF: 8.0             # Receiver Noise Figure (dB)
   temperature: 290.0  # Temperature (K)
   H: 3                # Number of targets
-  FAR: 0.000000001            # False alarm rate
+  FAR: 0.000001           # False alarm rate
   
 ofdm:
   modulation: "BPSK"  # Modulation scheme (BPSK or QPSK)
@@ -30,4 +32,4 @@ targets:
 
   - distance: 30.0
     velocity: 0.0
-    rcs: 20.0
+    rcs: 25.0
