@@ -128,7 +128,7 @@ def plot_periodogram_and_detections(per, B, detections, eta, d, v,
     Plot Range-Doppler map and Binary detection map side-by-side.
     """
 
-    fig, axs = plt.subplots(1, 2, figsize=(14, 5))
+    fig, axs = plt.subplots(2, 1, figsize=(6, 7))
 
     # --- Periodogram ---
     per_db = 10 * np.log10(per * 1000)
@@ -214,6 +214,96 @@ def plot_periodogram_and_detections(per, B, detections, eta, d, v,
     axs[1].set_xlabel("Relative speed (m/s)")
     axs[1].set_ylabel("Distance (m)")
     fig.colorbar(im1, ax=axs[1], label="0 = available, 1 = suppressed")
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
+                        title="3D Range-Doppler Map", floor_dbm=-120):
+    """
+    Plot 3D do periodograma.
+
+    Parameters
+    ----------
+    per : ndarray
+        Periodograma em escala linear, shape (len(d), len(v))
+    d : ndarray
+        Eixo de distância
+    v : ndarray
+        Eixo de velocidade
+    v_lim : tuple/list, optional
+        Limites de velocidade [vmin, vmax]
+    d_lim : tuple/list, optional
+        Limites de distância [dmin, dmax]
+    floor_dbm : float
+        Piso apenas para visualização
+    """
+
+    per_db = 10 * np.log10(per * 1000)
+    # per_db[~np.isfinite(per_db)] = floor_dbm
+    # per_db = np.maximum(per_db, floor_dbm)
+
+    d_plot = d.copy()
+    v_plot = v.copy()
+    per_plot = per_db.copy()
+
+    if d_lim is not None:
+        d_mask = (d_plot >= d_lim[0]) & (d_plot <= d_lim[1])
+        per_plot = per_plot[d_mask, :]
+        d_plot = d_plot[d_mask]
+
+    if v_lim is not None:
+        v_mask = (v_plot >= v_lim[0]) & (v_plot <= v_lim[1])
+        per_plot = per_plot[:, v_mask]
+        v_plot = v_plot[v_mask]
+
+    V, D = np.meshgrid(v_plot, d_plot)
+
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111, projection="3d")
+
+    surf = ax.plot_surface(
+        V, D, per_plot,
+        cmap="viridis",
+        linewidth=0,
+        antialiased=True
+    )
+
+    # --- Threshold plane ---
+    eta_dbm = 10 * np.log10(eta * 1000)
+    # Z_eta = np.full_like(per_plot, eta_dbm)
+
+    # ax.plot_surface(
+    #     V, D, Z_eta,
+    #     color='red',
+    #     alpha=0.3
+    # )
+
+    # mask = per_plot >= eta_dbm
+
+    # ax.scatter(
+    #     V[mask],
+    #     D[mask],
+    #     per_plot[mask],
+    #     color='red',
+    #     s=5
+    # )
+
+    ax.contour(
+        V, D, per_plot,
+        levels=[eta_dbm],
+        colors='red',
+        offset=eta_dbm
+    )
+
+    ax.set_xlabel("Relative speed (m/s)")
+    ax.set_ylabel("Distance (m)")
+    ax.set_zlabel("Received power (dBm)")
+    ax.set_title(title)
+
+    fig.colorbar(surf, ax=ax, shrink=0.7, pad=0.1, label="Received power (dBm)")
 
     plt.tight_layout()
     plt.show()

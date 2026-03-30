@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import load_config, plot_periodogram, plot_detections, plot_periodogram_and_detections, C0
+from src.utils import load_config, plot_periodogram, plot_detections, plot_periodogram_and_detections, plot_periodogram_3d, C0
 from src import environment as env
 from src import transmitter as tx
 from src import receiver as rx
@@ -76,9 +76,9 @@ F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window="hamming")
 
 
-# Estimation and detection algorithms =======================================================================================
+# Post processing =======================================================================================
 detections, eta, B = post.cfar_detector(per, noise_power_hat, FAR, N_win=12, M_win=128)
-print("Detection Threshold (dBm):", 10 * np.log10(eta * 1000))
+print("Detection Threshold (dBm):", 10 * np.log10(eta * 1000), "\n")
 
 det_targets = []
 for t, det in enumerate(detections):
@@ -112,6 +112,8 @@ vlim=[-100.0, 100.0]
 dlim=[0.0, 40.0]
 
 plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
+
+plot_periodogram_3d(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
 
 # plot_periodogram(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim, title="Range-Doppler Map")
 

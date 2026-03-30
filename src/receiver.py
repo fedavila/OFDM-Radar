@@ -60,7 +60,7 @@ def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
         W = 1 / (np.linalg.norm(w_range)**2 * np.linalg.norm(w_doppler)**2) * np.outer(w_range, w_doppler)
         F_nm *= W
 
-    F_range = N_per * np.fft.ifft(F_nm, n=N_per, axis=0)
+    F_range = N_per * np.fft.ifft(F_nm, n=N_per, axis=0) # N_per scaling because of numpy's ifft implementation
 
     # Noise power estimation ----------------------------------
     noise_rows = F_range[-2:, :]
@@ -81,7 +81,7 @@ def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
     n_idx = np.arange(N_max)
     m_idx = np.arange(-M_max, M_max + 1)
 
-    peak_corr = (N * M / np.sum(W))**2
+    peak_corr = (N * M / np.sum(W))**2 # peak correction because of windowing usage
 
     return per, n_idx, m_idx, sigma2_hat, peak_corr
 

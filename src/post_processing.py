@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def cfar_detector(
     per: np.ndarray,
     noise_power: float,
@@ -38,21 +37,11 @@ def cfar_detector(
     B : ndarray
         Final binary map (True = available, False = suppressed).
     """
-    if per.ndim != 2:
-        raise ValueError("per must be 2D")
 
     N_max, M_crop = per.shape
 
-    if noise_power <= 0:
-        raise ValueError("noise_power must be positive")
-    if FAR <= 0:
-        raise ValueError("FAR must be positive")
-
     n_cells = N_max * M_crop
-    if FAR >= n_cells:
-        raise ValueError("FAR must be smaller than number of cells")
 
-    # Braun FAR-based threshold on cropped map
     eta = -noise_power * np.log(FAR / n_cells)
 
     B = np.ones_like(per, dtype=bool)
@@ -89,3 +78,5 @@ def cfar_detector(
         B[ellipse] = False
 
     return detections, eta, B
+
+
