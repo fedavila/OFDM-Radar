@@ -213,15 +213,17 @@ def plot_periodogram_and_detections(per, B, detections, eta, d, v,
     axs[1].set_title(title2)
     axs[1].set_xlabel("Relative speed (m/s)")
     axs[1].set_ylabel("Distance (m)")
+    axs[1].grid(linestyle=":")
     fig.colorbar(im1, ax=axs[1], label="0 = available, 1 = suppressed")
 
     plt.tight_layout()
+    plt.savefig("results/2D_periodogram.png")
     plt.show()
 
 
 
 def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
-                        title="3D Range-Doppler Map", floor_dbm=-120):
+                        title="3D Range-Doppler Map"):
     """
     Plot 3D do periodograma.
 
@@ -291,12 +293,12 @@ def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
     #     s=5
     # )
 
-    ax.contour(
-        V, D, per_plot,
-        levels=[eta_dbm],
-        colors='red',
-        offset=eta_dbm
-    )
+    # ax.contour(
+    #     V, D, per_plot,
+    #     levels=[eta_dbm],
+    #     colors='red',
+    #     offset=eta_dbm
+    # )
 
     ax.set_xlabel("Relative speed (m/s)")
     ax.set_ylabel("Distance (m)")
@@ -306,4 +308,5 @@ def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
     fig.colorbar(surf, ax=ax, shrink=0.7, pad=0.1, label="Received power (dBm)")
 
     plt.tight_layout()
+    plt.savefig("results/3D_periodogram.png")
     plt.show()
