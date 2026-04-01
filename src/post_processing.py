@@ -3,7 +3,7 @@ import numpy as np
 def cfar_detector(
     per: np.ndarray,
     noise_power: float,
-    FAR: float,
+    pfa: float,
     N_win: int = 3,
     M_win: int = 3,
 ):
@@ -32,7 +32,7 @@ def cfar_detector(
             - 'm_col': Doppler column index inside cropped periodogram
             - 'm_bin': centered Doppler-bin index
             - 'peak_power': detected peak value
-    eta : float
+    eta : float 
         Detection threshold.
     B : ndarray
         Final binary map (True = available, False = suppressed).
@@ -42,7 +42,8 @@ def cfar_detector(
 
     n_cells = N_max * M_crop
 
-    eta = -noise_power * np.log(FAR / n_cells)
+    #eta = -noise_power * np.log(pfa / n_cells)
+    eta = -noise_power * np.log(1 - (1 - pfa)**(1/n_cells)) # more accurate threshold calculation for small FAR values
 
     B = np.ones_like(per, dtype=bool)
     detections = []

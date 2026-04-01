@@ -312,10 +312,13 @@ def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
     plt.show()
 
 
-def plot_distance_error(error_matrix, bandwidths):
+def plot_distance_error_db(error_matrix, bandwidths):
 
     mean = np.mean(error_matrix, axis=0)
     std = np.std(error_matrix, axis=0)
+
+    mean_db = 10 * np.log10(mean)
+    std_db = 10 * np.log10(mean + std) - mean_db
 
     plt.figure(figsize=(8, 5))
 
@@ -323,8 +326,8 @@ def plot_distance_error(error_matrix, bandwidths):
 
     plt.fill_between(
         bandwidths,
-        mean - std,
-        mean + std,
+        mean_db - std_db,
+        mean_db + std_db,
         color="blue",
         alpha=0.3,
         label="±1 std"

@@ -12,8 +12,7 @@ P_TX_DBM = config['radar']['Ptx']
 G_DBI = config['radar']['G']
 TEMP = config['radar']['temperature']
 NF_DB = config['radar']['NF']
-H = config['radar']['H']
-FAR = config['radar']['FAR']
+PFA = config['radar']['PFA']
 
 MODULATION = config['ofdm']['modulation']
 N_FFT = config['ofdm']['N_fft']
@@ -21,9 +20,6 @@ DELTA_F = config['ofdm']["delta_f"]
 T_CP = config['ofdm']['T_cp']
 N = config['ofdm']["N"]
 M = config['ofdm']['M']
-
-N_PER = config["periodogram"]['N_per']
-M_PER = config["periodogram"]['M_per']
 
 P_tx = 10 ** (P_TX_DBM / 10) * 1e-3
 G = 10 ** (G_DBI / 10)
@@ -36,8 +32,6 @@ CP_LEN = int(np.round(T_CP * FS)) # samples
 dmax = T_CP * C0 / 2
 vmax = DELTA_F * C0 / (10 * FC)
 
-N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
-M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
 if MODULATION == "BPSK": 
     BITS_PER_SYMBOL = 1
@@ -45,6 +39,16 @@ else:
     BITS_PER_SYMBOL = 2
 
 N_BITS = BITS_PER_SYMBOL * N * M
+
+if config['periodogram']['configure']:
+    N_PER = config["periodogram"]['N_per']
+    M_PER = config["periodogram"]['M_per']
+else:
+    N_PER = N * 4
+    M_PER = M * 4
+
+N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
+M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
 # Transmitter ============================================================================================================
 bits = tx.generate_bits(N_BITS)
@@ -65,7 +69,7 @@ echos = np.zeros_like(tx_signal, dtype=complex)
 for target in targets:
     echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, FS)
+rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, BANDWIDTH)
 
 
 # Receiver ==================================================================================================================
@@ -77,7 +81,9 @@ per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER
 
 
 # Post processing =======================================================================================
-detections, eta, B = post.cfar_detector(per, noise_power_hat, FAR, N_win=12, M_win=128)
+N_win = 5 * int(N_PER // N)
+M_win = 5 * int(M_PER // M)
+detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 print("Detection Threshold (dBm):", 10 * np.log10(eta * 1000), "\n")
 
 det_targets = []

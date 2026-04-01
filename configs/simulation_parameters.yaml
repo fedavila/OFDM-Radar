@@ -6,18 +6,18 @@ radar:
   G: 0.0             # Antenna gain (dBi)
   NF: 8.0             # Receiver Noise Figure (dB)
   temperature: 290.0  # Temperature (K)
-  H: 4                # Number of targets
-  FAR: 0.000001           # False alarm rate
+  PFA: 0.00001           # Probability of False Alarm (PFA)
   
 ofdm:
   modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
   delta_f: 30000.0    # Subcarrier spacing (Hz)
   T_cp: 0.00000234    # Cyclic prefix duration (seconds)
   N_fft: 4096         # FFT size
-  N: 3276             # Number of active subcarriers
+  N: 3275             # Number of active subcarriers
   M: 256              # Number of OFDM symbols
 
 periodogram:
+  configure: False
   N_per: 8192         # Number of periodogram range bins
   M_per: 8192         # Number of periodogram doppler bins
 

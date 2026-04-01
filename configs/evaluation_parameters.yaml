@@ -4,8 +4,7 @@ radar:
   G: 0.0              # Antenna gain (dBi)
   NF: 8.0             # Receiver Noise Figure (dB)
   temperature: 290.0  # Temperature (K)
-  H: 1                # Number of targets
-  FAR: 0.000001       # False alarm rate
+  PFA: 0.00000001       # Probability of False Alarm (PFA)
   
 ofdm:
   modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
@@ -13,13 +12,13 @@ ofdm:
   T_cp: 0.00000234    # Cyclic prefix duration (seconds)
   N_fft: 4096         # FFT size
   N: 3276             # Number of active subcarriers
-  M: 256              # Number of OFDM symbols
+  M: 256               # Number of OFDM symbols
 
 evaluation:
   runs: 100   # Number of Monte Carlo trials for evaluation
   B_start: 10 # Starting Bandwidth (MHz)
   B_end: 100  # Ending Bandwidth (MHz)
-  B_step: 10  # Bandwidth step (MHz)
+  B_step: 5  # Bandwidth step (MHz)
   M_start: 128   # Starting number of OFDM symbols
   M_end: 2048
 

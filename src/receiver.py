@@ -63,7 +63,7 @@ def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
     F_range = N_per * np.fft.ifft(F_nm, n=N_per, axis=0) # N_per scaling because of numpy's ifft implementation
 
     # Noise power estimation ----------------------------------
-    noise_rows = F_range[-2:, :]
+    noise_rows = F_range[-1:, :]
     noise_dopp = np.fft.fft(noise_rows, n=M_per, axis=1)
     noise_per = np.abs(noise_dopp)**2 / (N * M)
     sigma2_hat = noise_per.mean()
