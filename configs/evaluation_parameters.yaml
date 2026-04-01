@@ -1,0 +1,34 @@
+radar:
+  fc: 3500000000.0    # Carrier frequency (Hz)
+  Ptx: 30.0           # Transmit power (dBm)
+  G: 0.0              # Antenna gain (dBi)
+  NF: 8.0             # Receiver Noise Figure (dB)
+  temperature: 290.0  # Temperature (K)
+  H: 1                # Number of targets
+  FAR: 0.000001       # False alarm rate
+  
+ofdm:
+  modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
+  delta_f: 30000.0    # Subcarrier spacing (Hz)
+  T_cp: 0.00000234    # Cyclic prefix duration (seconds)
+  N_fft: 4096         # FFT size
+  N: 3276             # Number of active subcarriers
+  M: 256              # Number of OFDM symbols
+
+evaluation:
+  runs: 100   # Number of Monte Carlo trials for evaluation
+  B_start: 10 # Starting Bandwidth (MHz)
+  B_end: 100  # Ending Bandwidth (MHz)
+  B_step: 10  # Bandwidth step (MHz)
+  M_start: 128   # Starting number of OFDM symbols
+  M_end: 2048
+
+
+periodogram:
+  N_per: 8192         # Number of periodogram range bins
+  M_per: 8192         # Number of periodogram doppler bins
+
+target:
+  - distance: 20.0    # meters
+    velocity: 0.0     # m/s
+    rcs: 20.0         # radar cross section in dBsm
