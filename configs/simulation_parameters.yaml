@@ -3,7 +3,7 @@
 radar:
   fc: 3500000000.0    # Carrier frequency (Hz)
   Ptx: 30.0           # Transmit power (dBm)
-  G: 0.0             # Antenna gain (dBi)
+  G: 20.0             # Antenna gain (dBi)
   NF: 8.0             # Receiver Noise Figure (dB)
   temperature: 290.0  # Temperature (K)
   PFA: 0.00001           # Probability of False Alarm (PFA)
@@ -20,20 +20,21 @@ periodogram:
   configure: False
   N_per: 8192         # Number of periodogram range bins
   M_per: 8192         # Number of periodogram doppler bins
+  window: "blackman-harris"         #(options: "rect", "hamming", "blackman-harris")
 
 targets:
-  - distance: 20.0    # meters
+  - distance: 2.0    # meters
     velocity: 0.0     # m/s
     rcs: 20.0         # radar cross section in dBsm
 
-  - distance: 25.0    
-    velocity: -50.0   
-    rcs: 20.0          
+  # - distance: 25.0    
+  #   velocity: -50.0   
+  #   rcs: 20.0          
 
-  - distance: 30.0
-    velocity: 0.0
-    rcs: 20.0        
+  # - distance: 30.0
+  #   velocity: 0.0
+  #   rcs: 20.0        
 
-  - distance: 35.0
-    velocity: 40.0
-    rcs: 20.0
+  # - distance: 35.0
+  #   velocity: 40.0
+  #   rcs: 20.0

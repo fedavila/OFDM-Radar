@@ -45,7 +45,7 @@ def periodogram(F, N_per, M_per, window="boxcar"):
 
 
 
-def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
+def crop_periodogram(F, N_per, M_per, N_max, M_max, window="rect"):
     M, N = F.shape
     F_nm = F.T
 
@@ -53,12 +53,15 @@ def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
         w_range = np.hamming(N)
         w_doppler = np.hamming(M)
         W = 1 / (np.linalg.norm(w_range)**2 * np.linalg.norm(w_doppler)**2) * np.outer(w_range, w_doppler)
-        F_nm *= W
-    elif window == "blackman-harris":
+    elif window == "bharris":
         w_range = windows.blackmanharris(N)
         w_doppler = windows.blackmanharris(M)
         W = 1 / (np.linalg.norm(w_range)**2 * np.linalg.norm(w_doppler)**2) * np.outer(w_range, w_doppler)
-        F_nm *= W
+    elif window == "rect":
+        W = np.ones((N, M))
+        
+    F_nm *= W
+    peak_corr = (N * M / np.sum(W))**2                  # peak correction because of windowing usage
 
     F_range = N_per * np.fft.ifft(F_nm, n=N_per, axis=0) # N_per scaling because of numpy's ifft implementation
 
@@ -81,7 +84,7 @@ def crop_periodogram(F, N_per, M_per, N_max, M_max, window="boxcar"):
     n_idx = np.arange(N_max)
     m_idx = np.arange(-M_max, M_max + 1)
 
-    peak_corr = (N * M / np.sum(W))**2 # peak correction because of windowing usage
+    
 
     return per, n_idx, m_idx, sigma2_hat, peak_corr
 

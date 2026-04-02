@@ -21,6 +21,8 @@ T_CP = config['ofdm']['T_cp']
 N = config['ofdm']["N"]
 M = config['ofdm']['M']
 
+WINDOW = config['periodogram']['window']
+
 P_tx = 10 ** (P_TX_DBM / 10) * 1e-3
 G = 10 ** (G_DBI / 10)
 
@@ -77,12 +79,12 @@ rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, BANDWIDTH)
 rx_signal *= np.sqrt(G)
 F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 
-per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window="hamming")
+per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window=WINDOW)
 
 
 # Post processing =======================================================================================
-N_win = 5 * int(N_PER // N)
-M_win = 5 * int(M_PER // M)
+N_win = 8 * int(N_PER // N)
+M_win = 8 * int(M_PER // M)
 detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 print("Detection Threshold (dBm):", 10 * np.log10(eta * 1000), "\n")
 
@@ -117,9 +119,9 @@ v_ax = m_idx * C0 / (2 * FC * T_SYM * M_PER)
 vlim=[-100.0, 100.0] 
 dlim=[0.0, 40.0]
 
-plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
+plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=None, d_lim=None)
 
-plot_periodogram_3d(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
+plot_periodogram_3d(per, eta, d_ax, v_ax, v_lim=None, d_lim=None)
 
 # plot_periodogram(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim, title="Range-Doppler Map")
 

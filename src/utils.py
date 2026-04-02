@@ -158,14 +158,14 @@ def plot_periodogram_and_detections(per, B, detections, eta, d, v,
     )
 
     # Overlay threshold contour
-    axs[0].contour(
-        v_plot,
-        d_plot,
-        per_plot,
-        levels=[eta_dbm],
-        colors="red",
-        linewidths=1
-    )
+    # axs[0].contour(
+    #     v_plot,
+    #     d_plot,
+    #     per_plot,
+    #     levels=[eta_dbm],
+    #     colors="red",
+    #     linewidths=1
+    # )
 
     axs[0].set_title(title1)
     axs[0].set_xlabel("Relative speed (m/s)")

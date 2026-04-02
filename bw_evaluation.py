@@ -1,4 +1,5 @@
 # %% Imports
+
 import numpy as np
 from src.utils import load_config, plot_periodogram_and_detections, C0
 from src import environment as env
@@ -27,8 +28,7 @@ B_START = config['evaluation']['B_start']
 B_END = config['evaluation']['B_end']
 B_STEP = config['evaluation']['B_step']
 
-# N_PER = config["periodogram"]['N_per']
-# M_PER = config["periodogram"]['M_per']
+WINDOW = config['periodogram']['window']
 
 P_tx = 10 ** (P_TX_DBM / 10) * 1e-3
 G = 10 ** (G_DBI / 10)
@@ -38,8 +38,6 @@ T_SYM = (1.0 / DELTA_F) + T_CP    # seconds
 dmax = T_CP * C0 / 2
 vmax = DELTA_F * C0 / (10 * FC)
 
-# N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
-# M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
 if MODULATION == "BPSK": 
     BITS_PER_SYMBOL = 1
@@ -54,13 +52,17 @@ for j, bw in enumerate(bandwidths):
     
     N = int(bw * 1e6 / DELTA_F)
     N_FFT = int(2 ** np.ceil(np.log2(N)))
-    # N_FFT = 4096
     FS = N_FFT * DELTA_F
     CP_LEN = int(np.round(T_CP * FS)) # samples
     N_BITS = BITS_PER_SYMBOL * N * M
 
-    N_PER = N * 4
-    M_PER = M * 4
+    if config["periodogram"]["configure"]:
+        N_PER = config["periodogram"]['N_per']
+        M_PER = config["periodogram"]['M_per']
+    else:
+        N_PER = 4 * N
+        M_PER = 4 * M
+        
     N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
     M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
@@ -77,8 +79,11 @@ for j, bw in enumerate(bandwidths):
 
 
         # Environment =============================================================================================================
-
-        target = env.Target(**config['target'][0])
+        real_distance = np.random.uniform(2.0, dmax - 1.0) 
+        real_speed = np.random.uniform(-vmax + 1.0, vmax - 1.0)
+        real_rcs = config['target'][0]['rcs']
+        
+        target = env.Target(distance=real_distance, velocity=real_speed, rcs=real_rcs)
 
         echos = np.zeros_like(tx_signal, dtype=complex)
 
@@ -92,13 +97,13 @@ for j, bw in enumerate(bandwidths):
         rx_signal *= np.sqrt(G)
         F = rx.ofdm_demodulation(rx_signal, CP_LEN, N_FFT, F_tx)
 
-        per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window="hamming")
+        per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER, N_MAX, M_MAX, window=WINDOW)
 
 
         
         # Post processing =======================================================================================
-        N_win = 5 * int(N_PER // N)
-        M_win = 5 * int(M_PER // M)
+        N_win = 7 * int(N_PER // N)
+        M_win = 7 * int(M_PER // M)
         detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 
         det_targets = []
@@ -123,7 +128,7 @@ for j, bw in enumerate(bandwidths):
         vlim=[-100.0, 100.0] 
         dlim=[0.0, 40.0]
 
-        #plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
+        # plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=None, d_lim=None)
         abs_errors[k, j] = np.abs(det_targets[0]["d_hat"] - target.distance)
 
 # %%  Plot
@@ -149,12 +154,13 @@ plt.fill_between(
 )
 
 plt.xlabel("Bandwidth [MHz]")
-plt.ylabel(r"$|e_d|~[m]$")
+plt.ylabel(r"$|e_d|~[dB]$")
 plt.title("Distance Error vs Bandwidth")
 plt.legend()
 plt.grid(linestyle=':')
 
 plt.tight_layout()
+plt.savefig("results/N_evaluation.png")
 plt.show()        
 
 # %%
