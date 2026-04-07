@@ -158,14 +158,14 @@ def plot_periodogram_and_detections(per, B, detections, eta, d, v,
     )
 
     # Overlay threshold contour
-    axs[0].contour(
-        v_plot,
-        d_plot,
-        per_plot,
-        levels=[eta_dbm],
-        colors="red",
-        linewidths=1
-    )
+    # axs[0].contour(
+    #     v_plot,
+    #     d_plot,
+    #     per_plot,
+    #     levels=[eta_dbm],
+    #     colors="red",
+    #     linewidths=1
+    # )
 
     axs[0].set_title(title1)
     axs[0].set_xlabel("Relative speed (m/s)")
@@ -309,4 +309,35 @@ def plot_periodogram_3d(per, eta, d, v, v_lim=None, d_lim=None,
 
     plt.tight_layout()
     plt.savefig("results/3D_periodogram.png")
+    plt.show()
+
+
+def plot_distance_error_db(error_matrix, bandwidths):
+
+    mean = np.mean(error_matrix, axis=0)
+    std = np.std(error_matrix, axis=0)
+
+    mean_db = 10 * np.log10(mean)
+    std_db = 10 * np.log10(mean + std) - mean_db
+
+    plt.figure(figsize=(8, 5))
+
+    plt.plot(bandwidths, mean, label='Mean absolute error', color='blue')
+
+    plt.fill_between(
+        bandwidths,
+        mean_db - std_db,
+        mean_db + std_db,
+        color="blue",
+        alpha=0.3,
+        label="±1 std"
+    )
+
+    plt.xlabel("Bandwidth [MHz]")
+    plt.ylabel(r"$|e_d|~[m]$")
+    plt.title("Distance Error vs Bandwidth")
+    plt.legend()
+    plt.grid(linestyle=':')
+
+    plt.tight_layout()
     plt.show()

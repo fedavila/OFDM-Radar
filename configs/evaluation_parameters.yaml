@@ -1,0 +1,34 @@
+radar:
+  fc: 3500000000.0    # Carrier frequency (Hz)
+  Ptx: 30.0           # Transmit power (dBm)
+  G: 30.0              # Antenna gain (dBi)
+  NF: 8.0             # Receiver Noise Figure (dB)
+  temperature: 290.0  # Temperature (K)
+  PFA: 0.0001       # Probability of False Alarm (PFA)
+  
+ofdm:
+  modulation: "QPSK"  # Modulation scheme (BPSK or QPSK)
+  delta_f: 30000.0    # Subcarrier spacing (Hz)
+  T_cp: 0.00000234    # Cyclic prefix duration (seconds)
+  N: 3276             # Number of active subcarriers (when fixed in simulation)
+  M: 256              # Number of OFDM symbols (when fixed in simulation)
+
+evaluation:
+  runs: 100           # Number of Monte Carlo trials for evaluation
+  B_start: 10         # Starting Bandwidth (MHz)
+  B_end: 100          # Ending Bandwidth (MHz)
+  B_step: 5           # Bandwidth step (MHz)
+  M_start: 128        # Starting number of OFDM symbols
+  M_end: 4096
+
+
+periodogram:
+  configure: False          # If false, N_PER and M_PER will be set to 4*N and 4*M respectively
+  N_per: 8192               # Number of periodogram range bins
+  M_per: 8192               # Number of periodogram doppler bins
+  window: "bharris"         #(options: "rect", "hamming", "blackman-harris")
+
+target:
+  - distance: 27.5    # meters
+    velocity: 0.0     # m/s
+    rcs: 20.0         # radar cross section in dBsm
