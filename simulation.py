@@ -49,6 +49,12 @@ else:
     N_PER = N * 4
     M_PER = M * 4
 
+# Suppression window size scaling factor: alpha * (N_PER/N) and alpha * (M_PER/M)
+if WINDOW == "bharris":
+    alpha = 8
+else:
+    alpha = 5
+
 N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
 M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
@@ -83,8 +89,8 @@ per, n_idx, m_idx, noise_power_hat, c_norm = rx.crop_periodogram(F, N_PER, M_PER
 
 
 # Post processing =======================================================================================
-N_win = 8 * int(N_PER // N)
-M_win = 8 * int(M_PER // M)
+N_win = alpha * int(N_PER // N)
+M_win = alpha * int(M_PER // M)
 detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 print("Detection Threshold (dBm):", 10 * np.log10(eta * 1000), "\n")
 
@@ -119,9 +125,9 @@ v_ax = m_idx * C0 / (2 * FC * T_SYM * M_PER)
 vlim=[-100.0, 100.0] 
 dlim=[0.0, 40.0]
 
-plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=None, d_lim=None)
+plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
 
-plot_periodogram_3d(per, eta, d_ax, v_ax, v_lim=None, d_lim=None)
+plot_periodogram_3d(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim)
 
 # plot_periodogram(per, eta, d_ax, v_ax, v_lim=vlim, d_lim=dlim, title="Range-Doppler Map")
 

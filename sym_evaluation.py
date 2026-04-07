@@ -46,6 +46,12 @@ if MODULATION == "BPSK":
 else: 
     BITS_PER_SYMBOL = 2
 
+# Suppression window size scaling factor: alpha * (N_PER/N) and alpha * (M_PER/M)
+if WINDOW == "bharris":
+    alpha = 8
+else:
+    alpha = 5
+
 
 exp = np.arange(np.log2(M_START), np.log2(M_END) + 1)
 Mset = 2 ** exp
@@ -53,6 +59,7 @@ Mset = 2 ** exp
 abs_errors = np.zeros((RUNS, len(Mset))) 
 
 for j, M in enumerate(Mset):
+    M = int(M)
     
     N_BITS = BITS_PER_SYMBOL * N * M
 
@@ -62,6 +69,8 @@ for j, M in enumerate(Mset):
     else:
         N_PER = 4 * N
         M_PER = 4 * M
+
+    
         
     N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
     M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
@@ -102,8 +111,8 @@ for j, M in enumerate(Mset):
 
         
         # Post processing =======================================================================================
-        N_win = 7 * int(N_PER // N)
-        M_win = 7 * int(M_PER // M)
+        N_win = alpha * int(N_PER // N)
+        M_win = alpha * int(M_PER // M)
         detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 
         det_targets = []
@@ -129,7 +138,7 @@ for j, M in enumerate(Mset):
         dlim=[0.0, 40.0]
 
         # plot_periodogram_and_detections(per, B, det_targets, eta, d_ax, v_ax, v_lim=None, d_lim=None)
-        abs_errors[k, j] = np.abs(det_targets[0]["d_hat"] - target.distance)
+        abs_errors[k, j] = np.abs(det_targets[0]["v_hat"] - target.velocity)
 
 # %%  Plot
 import matplotlib.pyplot as plt
@@ -142,10 +151,10 @@ std_db = 10 * np.log10(mean + std) - mean_db
 
 plt.figure(figsize=(8, 5))
 
-plt.plot(bandwidths, mean_db, label='Mean absolute error', color='blue')
+plt.plot(Mset, mean_db, label='Mean absolute error', color='blue')
 
 plt.fill_between(
-    bandwidths,
+    Mset,
     mean_db - std_db,
     mean_db + std_db,
     color="blue",
@@ -153,13 +162,13 @@ plt.fill_between(
     label="±1 std"
 )
 
-plt.xlabel("Bandwidth [MHz]")
-plt.ylabel(r"$|e_d|~[dB]$")
-plt.title("Distance Error vs Bandwidth")
+plt.xlabel("Number of OFDM Symbols")
+plt.ylabel(r"$|e_v|~[dB]$")
+plt.title("Speed Error vs Number of OFDM Symbols")
 plt.legend()
 plt.grid(linestyle=':')
 
 plt.tight_layout()
-plt.savefig("results/N_evaluation.png")
+plt.savefig("results/SYM_evaluation.png")
 plt.show()        
 

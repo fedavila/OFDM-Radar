@@ -44,6 +44,12 @@ if MODULATION == "BPSK":
 else: 
     BITS_PER_SYMBOL = 2
 
+# Suppression window size scaling factor: alpha * (N_PER/N) and alpha * (M_PER/M)
+if WINDOW == "bharris":
+    alpha = 8
+else:
+    alpha = 5
+
 
 bandwidths = np.arange(B_START, B_END + 1, B_STEP)
 abs_errors = np.zeros((RUNS, len(bandwidths))) 
@@ -62,7 +68,8 @@ for j, bw in enumerate(bandwidths):
     else:
         N_PER = 4 * N
         M_PER = 4 * M
-        
+
+ 
     N_MAX = int(np.ceil(2 * dmax * N_PER * DELTA_F) / C0)
     M_MAX = int(np.ceil(2 * vmax * FC * T_SYM * M_PER) / C0)
 
@@ -102,8 +109,8 @@ for j, bw in enumerate(bandwidths):
 
         
         # Post processing =======================================================================================
-        N_win = 7 * int(N_PER // N)
-        M_win = 7 * int(M_PER // M)
+        N_win = alpha * int(N_PER // N)
+        M_win = alpha * int(M_PER // M)
         detections, eta, B = post.cfar_detector(per, noise_power_hat, PFA, N_win=N_win, M_win=M_win)
 
         det_targets = []
@@ -160,7 +167,5 @@ plt.legend()
 plt.grid(linestyle=':')
 
 plt.tight_layout()
-plt.savefig("results/N_evaluation.png")
+plt.savefig("results/BW_evaluation.png")
 plt.show()        
-
-# %%
