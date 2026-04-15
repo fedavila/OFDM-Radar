@@ -20,10 +20,10 @@ periodogram:
   configure: False
   N_per: 8192         # Number of periodogram range bins
   M_per: 8192         # Number of periodogram doppler bins
-  window: "hamming"   #(options: "rect", "hamming", "bharris")
+  window: "bharris"   #(options: "rect", "hamming", "bharris")
 
 targets:
-  - distance: 20.0    # meters
+  - distance: 10.0    # meters
     velocity: 0.0     # m/s
     rcs: 20.0         # radar cross section in dBsm
 

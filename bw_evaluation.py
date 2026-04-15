@@ -96,7 +96,7 @@ for j, bw in enumerate(bandwidths):
 
         echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-        rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, N * DELTA_F)
+        rx_signal = env.apply_awgn(echos, TEMP, NF_DB, N * DELTA_F)
 
 
         # Receiver ==================================================================================================================
@@ -144,27 +144,29 @@ import matplotlib.pyplot as plt
 mean = np.mean(abs_errors, axis=0)
 std = np.std(abs_errors, axis=0)
 
-mean_db = 10 * np.log10(mean)
-std_db = 10 * np.log10(mean + std) - mean_db
+# mean_db = 10 * np.log10(mean)
+# std_db = 10 * np.log10(mean + std) - mean_db
 
 plt.figure(figsize=(8, 5))
 
-plt.plot(bandwidths, mean_db, label='Mean absolute error', color='blue')
+plt.plot(bandwidths, mean, label='Mean absolute error', color='blue')
 
 plt.fill_between(
     bandwidths,
-    mean_db - std_db,
-    mean_db + std_db,
+    mean - std,
+    mean + std,
     color="blue",
     alpha=0.3,
     label="±1 std"
 )
 
+plt.yscale('log')
+
 plt.xlabel("Bandwidth [MHz]")
-plt.ylabel(r"$|e_d|~[dB]$")
-plt.title("Distance Error vs Bandwidth")
+plt.ylabel(r"$|e_d|~[m]$")
+plt.title("Distance Error vs Bandwidth (log scale)")
 plt.legend()
-plt.grid(linestyle=':')
+plt.grid(True, which="both", linestyle=':')
 
 plt.tight_layout()
 plt.savefig("results/BW_evaluation.png")

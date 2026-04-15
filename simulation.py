@@ -77,7 +77,7 @@ echos = np.zeros_like(tx_signal, dtype=complex)
 for target in targets:
     echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, BANDWIDTH)
+rx_signal = env.apply_awgn(echos, TEMP, NF_DB, BANDWIDTH)
 
 
 # Receiver ==================================================================================================================

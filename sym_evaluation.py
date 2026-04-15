@@ -98,7 +98,7 @@ for j, M in enumerate(Mset):
 
         echos += env.apply_target_echo(target, tx_signal, CP_LEN, FS, FC)
 
-        rx_signal = env.apply_awgn_nf(echos, TEMP, NF_DB, N * DELTA_F)
+        rx_signal = env.apply_awgn(echos, TEMP, NF_DB, N * DELTA_F)
 
 
         # Receiver ==================================================================================================================
@@ -146,29 +146,33 @@ import matplotlib.pyplot as plt
 mean = np.mean(abs_errors, axis=0)
 std = np.std(abs_errors, axis=0)
 
-mean_db = 10 * np.log10(mean)
-std_db = 10 * np.log10(mean + std) - mean_db
+# mean_db = 10 * np.log10(mean)
+# std_db = 10 * np.log10(mean + std) - mean_db
 
 plt.figure(figsize=(8, 5))
 
-plt.plot(Mset, mean_db, label='Mean absolute error', color='blue')
+plt.plot(Mset, mean, label='Mean absolute error', color='blue')
 
 plt.fill_between(
     Mset,
-    mean_db - std_db,
-    mean_db + std_db,
+    mean - std,
+    mean + std,
     color="blue",
     alpha=0.3,
     label="±1 std"
 )
 
+plt.yscale('log')
+
+plt.title("Speed Error vs Number of OFDM Symbols (log scale)")
 plt.xlabel("Number of OFDM Symbols")
-plt.ylabel(r"$|e_v|~[dB]$")
-plt.title("Speed Error vs Number of OFDM Symbols")
+plt.ylabel(r"$|e_v|~[m/s]$")
 plt.legend()
-plt.grid(linestyle=':')
+plt.grid(True, which="both", linestyle=':')
 
 plt.tight_layout()
 plt.savefig("results/SYM_evaluation.png")
 plt.show()        
 
+
+# %%

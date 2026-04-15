@@ -41,7 +41,7 @@ def apply_target_echo(target, signal, cp_len, fs, fc):
 
     return b * delayed * doppler * rand_phase
 
-def apply_awgn_snr(signal, snr_db):
+def apply_awgn_from_snr(signal, snr_db):
 
     """
     Change function: generate noise power as in equation 3.35
@@ -55,7 +55,7 @@ def apply_awgn_snr(signal, snr_db):
 
     return signal + noise
 
-def apply_awgn_nf(signal, temp, nf_db, bandwidth):
+def apply_awgn(signal, temp, nf_db, bandwidth):
 
     nf_lin = 10 ** (nf_db / 10)
     noise_power = KB * temp * nf_lin * bandwidth
