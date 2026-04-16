@@ -45,7 +45,7 @@ def periodogram(F, N_per, M_per, window="boxcar"):
 
 
 
-def crop_periodogram(F, N_per, M_per, N_max, M_max, window="rect    "):
+def crop_periodogram(F, N_per, M_per, N_max, M_max, window="rect"):
     M, N = F.shape
     F_nm = F.T
 
