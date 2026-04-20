@@ -59,9 +59,10 @@ ofdm-radar/
     └── SYM_evaluation.png
 ```
 
-## Example Output
+## Example Outputs
 
 ![Range-Doppler Map](results/2D_periodogram.png)
+![3D-Range-Doppler Map](results/3D_periodogram.png)
 
 ---
 
